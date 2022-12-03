@@ -1,34 +1,40 @@
 const Engineer = require('../lib/Engineer');
-const Employee = require('../lib/Engineer');
 
 describe('Engineer',() => {
-    const employee = new Engineer('Osama',2,'osama@gmail.com');
+    const engineer = new Engineer('Alan',5,'alan@gmail.com','oriarh');
     describe("getName", () => {
-        it('It should return the name of the employee as passed in the perimeter', () => {
+        it('It should return the name of the engineer as passed in the perimeter', () => {
 
-            const name = employee.getName();
-            expect(name).toEqual("Osama");
+            const name = engineer.getName();
+            expect(name).toEqual("Alan");
         });
     });
 
     describe("getId", () => {
-        it('It should return the ID of the employee as passed in the perimeter', () => {
-            const id = employee.getId();
-            expect(id).toEqual(2);
+        it('It should return the ID of the engineer as passed in the perimeter', () => {
+            const id = engineer.getId();
+            expect(id).toEqual(5);
         });
     });
     
     describe("getEmail", () => {
-        it('It should return the Email of the employee as passed in the perimeter', () => {
-            const email = employee.getEmail();
-            expect(email).toEqual('osama@gmail.com');
+        it('It should return the Email of the engineer as passed in the perimeter', () => {
+            const email = engineer.getEmail();
+            expect(email).toEqual('alan@gmail.com');
+        });
+    });
+
+    describe("getGithub", () => {
+        it('It should return the Github Username of the engineer as passed in the perimeter', () => {
+            const github = engineer.getGithub();
+            expect(github).toEqual('oriarh');
         });
     });
 
     describe("getRole", () => {
-        it('It should return the Role as employee', () => {
-            const role = employee.getRole();
-            expect(role).toEqual('employee');
+        it('It should return the Role as Engineer', () => {
+            const role = engineer.getRole();
+            expect(role).toEqual('Engineer');
         });
     });
 });
