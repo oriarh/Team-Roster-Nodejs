@@ -1,6 +1,8 @@
+//Import Dependencies
 const inquirer = require('inquirer');
 const jest = require ('jest');
 const fs = require('fs');
+const path = require('path');
 inquirer.registerPrompt("loop", require("inquirer-loop")(inquirer));
 const { objectExpression } = require('@babel/types');
 const { default: Choices } = require('inquirer/lib/objects/choices');
@@ -10,7 +12,7 @@ const Manager = require('./lib/Manager');
 const Engineer = require('./lib/Engineer');
 const Intern = require('./lib/intern');
 
-
+//Inquirer asks the user for input
 inquirer.prompt([
     {
         type: 'input',
@@ -45,26 +47,59 @@ inquirer.prompt([
             },
             {
                 type: 'input',
-                name: 'employeeName',
-                message: "What is the name of the team member?",
+                name: 'engineerName',
+                message: "What is the name of the engineer?",
+                when (answers) { 
+                    return answers.whichEmployee === 'Engineer'
+                },
             },
             {
                 type: 'input',
-                name: 'employeeId',
-                message: "What is the Id of the team member?",
+                name: 'engineerId',
+                message: "What is the Id of the engineer?",
+                when (answers) { 
+                    return answers.whichEmployee === 'Engineer'
+                },
             },
             {
                 type: 'input',
-                name: 'employeeEmail',
-                message: "What is the email of the team member?",
+                name: 'engineerEmail',
+                message: "What is the email of the engineer?",
+                when (answers) { 
+                    return answers.whichEmployee === 'Engineer'
+                },
             },
             {
                 type: 'input',
-                name: 'engineerGithub',
+                name: 'githubUsername',
                 message: "What is the engineer's github?",
                     when (answers) { 
                         return answers.whichEmployee === 'Engineer'
                     },
+            },
+            {
+                type: 'input',
+                name: 'internName',
+                message: "What is the name of the intern?",
+                when (answers) { 
+                    return answers.whichEmployee === 'Intern'
+                },
+            },
+            {
+                type: 'input',
+                name: 'internId',
+                message: "What is the Id of the intern?",
+                when (answers) { 
+                    return answers.whichEmployee === 'Intern'
+                },
+            },
+            {
+                type: 'input',
+                name: 'internEmail',
+                message: "What is the email of the intern?",
+                when (answers) { 
+                    return answers.whichEmployee === 'Intern'
+                },
             },
             {
                 type: 'input',
@@ -79,24 +114,47 @@ inquirer.prompt([
 ])
 .then((response) => {
     console.log(response);
-    fs.writeFile('justwritefileindex.html',JSON.stringify(response), (error) => {
-        if (error) {console.log(error)};
-    });
-})
+    
+    let managerTemplate = fs.readFileSync('./html/managerTemplate.html','utf-8');
+
+    Object.keys(response).forEach((key) => {
+        const value = response[key];
+        managerTemplate = managerTemplate.replaceAll(`{${key}}`,value)
+    })
+    
+    fs.writeFileSync('./html/mainindex.html',managerTemplate)
+
+    for (i=0;i<response.addEmployee.length;i++) {
+        if(response.addEmployee[i].whichEmployee === 'Engineer') {
+            const engineer = new Engineer (response.addEmployee[i].engineerName,response.addEmployee[i].engineerId,response.addEmployee[i].engineerEmail,response.addEmployee[i].githubUsername);
+
+            let engineerTemplate = fs.readFileSync('./html/engineerTemplate.html','utf-8');
+
+            Object.keys(engineer).forEach((key) => {
+                const value = engineer[key];
+                engineerTemplate = engineerTemplate.replaceAll(`{${key}}`,value);
+            })
+            
+            fs.appendFileSync('./html/mainindex.html',engineerTemplate)
+
+            //console.log(engineerTemplate);
 
 
-//-----------------------------------------------------------------------------------------------
-/*
-const indexTemplate = fs.readFileSync('./html/indexTemplate.html','utf-8');
+        } else {
+            const intern = new Intern (response.addEmployee[i].internName,response.addEmployee[i].internId,response.addEmployee[i].internEmail,response.addEmployee[i].internSchool);
 
-Object.keys(response).forEach((key) => {
-    const value = response[key];
-    contents = indexTemplate.replaceAll(`{${key}}`,value)
-})
+            let internTemplate = fs.readFileSync('./html/internTemplate.html','utf-8');
 
-let finalHtml = fs.writeFileSync('./html/index.html',contents)
+            Object.keys(intern).forEach((key) => {
+                const value = intern[key];
+                internTemplate = internTemplate.replaceAll(`{${key}}`,value);
+            })
+            
+            fs.appendFileSync('./html/mainindex.html',internTemplate)
+            
+        //console.log(internTemplate);
+        }
+    }
 
-
-console.log(Object.keys(response));
-*/
-//-----------------------------------------------------------------------------------------------
+    fs.appendFileSync('./html/mainindex.html','\n</div>\n</div>\n</body>\n</html>')
+});
