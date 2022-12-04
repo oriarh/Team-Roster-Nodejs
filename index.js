@@ -34,7 +34,7 @@ inquirer.prompt([
         name: 'managerNumber',
         message: "What is the manager's contact number?"
     },
-    {
+    { //Keeps asking the user if they want to enter more team members until they say no.
         type: 'loop',
         name: 'addEmployee',
         message: "Would you like to add another team member?",
@@ -111,19 +111,22 @@ inquirer.prompt([
             }
         ]
     },
-])
+]) 
 .then((response) => {
     console.log(response);
     
+    //Generates the header part of the template using users input about the manager
     let managerTemplate = fs.readFileSync('./html/managerTemplate.html','utf-8');
 
+    //Iterates over the responses and returns an array of keys in the object which are then replaced
     Object.keys(response).forEach((key) => {
         const value = response[key];
         managerTemplate = managerTemplate.replaceAll(`{${key}}`,value)
     })
     
-    fs.writeFileSync('./html/mainindex.html',managerTemplate)
+    fs.writeFileSync('mainindex.html',managerTemplate);
 
+    //Loops over the addemployee array and creates html for each time the user said yes
     for (i=0;i<response.addEmployee.length;i++) {
         if(response.addEmployee[i].whichEmployee === 'Engineer') {
             const engineer = new Engineer (response.addEmployee[i].engineerName,response.addEmployee[i].engineerId,response.addEmployee[i].engineerEmail,response.addEmployee[i].githubUsername);
@@ -135,7 +138,7 @@ inquirer.prompt([
                 engineerTemplate = engineerTemplate.replaceAll(`{${key}}`,value);
             })
             
-            fs.appendFileSync('./html/mainindex.html',engineerTemplate)
+            fs.appendFileSync('mainindex.html',engineerTemplate)
 
             //console.log(engineerTemplate);
 
@@ -150,11 +153,12 @@ inquirer.prompt([
                 internTemplate = internTemplate.replaceAll(`{${key}}`,value);
             })
             
-            fs.appendFileSync('./html/mainindex.html',internTemplate)
+            fs.appendFileSync('mainindex.html',internTemplate)
             
         //console.log(internTemplate);
         }
     }
 
-    fs.appendFileSync('./html/mainindex.html','\n</div>\n</div>\n</body>\n</html>')
+    //Adds the footer html code to the main html file
+    fs.appendFileSync('mainindex.html','\n</div>\n</div>\n</body>\n</html>')
 });
